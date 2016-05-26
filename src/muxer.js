@@ -12,7 +12,7 @@ import {Observable as O} from 'rx'
  * @returns {external:Observable} Multiplexed stream
  */
 export const mux = sources => {
-  const createStream = key => sources[key].map(value => ({key, value}))
+  const createStream = key => sources[key].map(value => [key, value])
   const keys = Object.keys(sources)
   return O.merge(keys.map(createStream))
 }
@@ -25,11 +25,11 @@ export const mux = sources => {
  * @returns {Array} Tuple of the selected streams and the rest of them
  */
 export const demux = (source$, ...keys) => {
-  const createSource = (source, _key) => {
-    const t$ = source$.filter(({key}) => key === _key).pluck('value')
-    return {...source, [_key]: t$}
+  const createSource = (source, key) => {
+    const t$ = source$.filter(([_key]) => _key === key).map(x => x[1])
+    return {...source, [key]: t$}
   }
-  const rest$ = source$.filter(({key}) => keys.indexOf(key) === -1).pluck('value')
+  const rest$ = source$.filter(([key]) => keys.indexOf(key) === -1).map(x => x[1])
   const source = keys.reduce(createSource, {})
   return [source, rest$]
 }
