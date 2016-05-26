@@ -24,9 +24,9 @@ test(t => {
   })
   const {messages} = sh.startScheduler(() => mux$)
   t.deepEqual(messages, [
-    onNext(210, {value: 'a0', key: 'a'}),
-    onNext(215, {value: 'b0', key: 'b'}),
-    onNext(220, {value: 'a1', key: 'a'}),
-    onNext(225, {value: 'b1', key: 'b'})
+    onNext(210, ['a', 'a0']),
+    onNext(215, ['b', 'b0']),
+    onNext(220, ['a', 'a1']),
+    onNext(225, ['b', 'b1'])
   ])
 })
