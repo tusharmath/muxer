@@ -4,6 +4,11 @@
 
 'use strict'
 import {Observable as O} from 'rx'
+const tuple = a => b => [a, b]
+const createStream = sources => key => sources[key].map(tuple(key))
+const match = key => ([_key]) => _key === key
+const first = x => x[1]
+const noMatch = keys => ([key]) => keys.indexOf(key) === -1
 
 /**
  * Creates a multiplexed stream from all the input streams
@@ -12,9 +17,8 @@ import {Observable as O} from 'rx'
  * @returns {external:Observable} Multiplexed stream
  */
 export const mux = sources => {
-  const createStream = key => sources[key].map(value => [key, value])
   const keys = Object.keys(sources)
-  return O.merge(keys.map(createStream))
+  return O.merge(keys.map(createStream(sources)))
 }
 
 /**
@@ -26,10 +30,11 @@ export const mux = sources => {
  */
 export const demux = (source$, ...keys) => {
   const createSource = (source, key) => {
-    const t$ = source$.filter(([_key]) => _key === key).map(x => x[1])
+    const t$ = source$.filter(match(key)).map(first)
     return {...source, [key]: t$}
   }
-  const rest$ = source$.filter(([key]) => keys.indexOf(key) === -1).map(x => x[1])
+
+  const rest$ = source$.filter(noMatch(keys)).map(first)
   const source = keys.reduce(createSource, {})
   return [source, rest$]
 }
