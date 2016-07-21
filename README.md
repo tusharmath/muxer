@@ -27,14 +27,14 @@ import {mux, demux} from 'muxer'
 
 function create$ () {
   const interval$ = O.interval(1000)
-  const mod2$ = interval$.filter(x => x%2 === 0).map(2) 
+  const mod2$ = interval$.filter(x => x%2 === 0).map(2)
   const mod3$ = interval$.filter(x => x%3 === 0).map(3)
   const mod7$ = interval$.filter(x => 7%3 === 0).map(7)
-  mux({mod2$, mod3$})
-} 
- 
-// Create a single stream that contains events from each of the individual streams 
-const mod$ = create$() 
+  return mux({mod2$, mod3$})
+}
+
+// Create a single stream that contains events from each of the individual streams
+const mod$ = create$()
 const [{mod2$}, rest$] = demux(mod$, 'mod2$')
 
 mod2$.subscribe(x => console.log('MOD2', x))
@@ -62,6 +62,15 @@ Creates a multiplexed stream from all the input streams
 | --- | --- | --- |
 | sources | <code>Object</code> | Dictionary of source streams. |
 
+**Example**  
+```js
+const mux$ = mux({
+  a: O.just(1),
+  b: O.just(2),
+  c: O.just(3)
+})
+mux$.subscribe(x => log(x)) // OUTPUTS: ['a', 1], ['b', 2], ['c', 3]
+```
 <a name="demux"></a>
 
 ## demux(source$, ...keys) ⇒ <code>Array</code>
@@ -75,6 +84,18 @@ De-multiplexes the source stream
 | source$ | <code>[Observable](#external_Observable)</code> | Input multiplexed stream |
 | ...keys | <code>String</code> | Map of source streams |
 
+**Example**  
+```js
+const mux$ = mux({
+  a: O.just(1),
+  b: O.just(2),
+  c: O.just(3)
+})
+const [{a, b}, rest] = demux(mux$, 'a', 'b')
+a.subscribe(x => log(x)) // OUTPUTS: 1
+b.subscribe(x => log(x)) // OUTPUTS: 2
+rest.subscribe(x => log(x)) // OUTPUTS: 3
+```
 <a name="external_Observable"></a>
 
 ## Observable

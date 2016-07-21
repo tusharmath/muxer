@@ -27,14 +27,14 @@ import {mux, demux} from 'muxer'
 
 function create$ () {
   const interval$ = O.interval(1000)
-  const mod2$ = interval$.filter(x => x%2 === 0).map(2) 
+  const mod2$ = interval$.filter(x => x%2 === 0).map(2)
   const mod3$ = interval$.filter(x => x%3 === 0).map(3)
   const mod7$ = interval$.filter(x => 7%3 === 0).map(7)
-  mux({mod2$, mod3$})
-} 
- 
-// Create a single stream that contains events from each of the individual streams 
-const mod$ = create$() 
+  return mux({mod2$, mod3$})
+}
+
+// Create a single stream that contains events from each of the individual streams
+const mod$ = create$()
 const [{mod2$}, rest$] = demux(mod$, 'mod2$')
 
 mod2$.subscribe(x => console.log('MOD2', x))

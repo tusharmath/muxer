@@ -13,6 +13,13 @@ const noMatch = keys => ([key]) => keys.indexOf(key) === -1
 /**
  * Creates a multiplexed stream from all the input streams
  * @function
+ * @example
+ * const mux$ = mux({
+ *   a: O.just(1),
+ *   b: O.just(2),
+ *   c: O.just(3)
+ * })
+ * mux$.subscribe(x => log(x)) // OUTPUTS: ['a', 1], ['b', 2], ['c', 3]
  * @param {Object} sources - Dictionary of source streams.
  * @returns {external:Observable} Multiplexed stream
  */
@@ -24,6 +31,16 @@ export const mux = sources => {
 /**
  * De-multiplexes the source stream
  * @function
+ * @example
+ * const mux$ = mux({
+ *   a: O.just(1),
+ *   b: O.just(2),
+ *   c: O.just(3)
+ * })
+ * const [{a, b}, rest] = demux(mux$, 'a', 'b')
+ * a.subscribe(x => log(x)) // OUTPUTS: 1
+ * b.subscribe(x => log(x)) // OUTPUTS: 2
+ * rest.subscribe(x => log(x)) // OUTPUTS: 3
  * @param {external:Observable} source$ - Input multiplexed stream
  * @param {...String} keys - Map of source streams
  * @returns {Array} Tuple of the selected streams and the rest of them
