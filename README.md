@@ -1,4 +1,6 @@
 # muxer
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/tusharmath/muxer.svg)](https://greenkeeper.io/)
 [![Build Status][travis-svg]][travis]
 [![npm][npm-svg]][npm]
 [![semantic-release][semantic-release-svg]][semantic-release]
