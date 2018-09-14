@@ -37,3 +37,7 @@ jspm_packages
 
 .idea/
 dist/
+
+*.js
+*.d.ts
+.vscode/
