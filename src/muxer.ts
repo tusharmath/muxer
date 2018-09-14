@@ -33,7 +33,7 @@ export const mux = <T extends Sources>(
   sources: T
 ): Observable<[string, any]> => {
   const keys = Object.keys(sources)
-  return merge(keys.map(createStream(sources)))
+  return merge(...keys.map(createStream(sources)))
 }
 
 /**
