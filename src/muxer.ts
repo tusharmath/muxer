@@ -2,13 +2,19 @@
  * Created by tushar.mathur on 26/05/16.
  */
 
-'use strict'
-import {Observable as O} from 'rx'
-const tuple = a => b => [a, b]
-const createStream = sources => key => sources[key].map(tuple(key))
-const match = key => ([_key]) => _key === key
-const first = x => x[1]
-const noMatch = keys => ([key]) => keys.indexOf(key) === -1
+import {Observable, merge} from 'rxjs'
+import * as O from 'rxjs/operators'
+
+type Sources = {[key: string]: Observable<any>}
+type SourceStream<T = any> = Observable<[string, T]>
+
+const tuple = <A>(a: A) => <B>(b: B) => [a, b]
+const createStream = <T extends Sources>(sources: T) => (key: keyof T) =>
+  O.map(tuple(key), sources[key])
+const match = (key: string) => ([_key]: [string, any]) => _key === key
+const first = <T>(x: Array<T>) => x[1]
+const noMatch = (keys: string[]) => ([key]: [string, any]) =>
+  keys.indexOf(key) === -1
 
 /**
  * Creates a multiplexed stream from all the input streams
@@ -23,9 +29,11 @@ const noMatch = keys => ([key]) => keys.indexOf(key) === -1
  * @param {Object} sources - Dictionary of source streams.
  * @returns {external:Observable} Multiplexed stream
  */
-export const mux = sources => {
+export const mux = <T extends Sources>(
+  sources: T
+): Observable<[string, any]> => {
   const keys = Object.keys(sources)
-  return O.merge(keys.map(createStream(sources)))
+  return merge(keys.map(createStream(sources)))
 }
 
 /**
@@ -45,13 +53,22 @@ export const mux = sources => {
  * @param {...String} keys - Map of source streams
  * @returns {Array} Tuple of the selected streams and the rest of them
  */
-export const demux = (source$, ...keys) => {
-  const createSource = (source, key) => {
-    const t$ = source$.filter(match(key)).map(first)
+export const demux = (
+  source$: SourceStream,
+  ...keys: Array<string>
+): [Sources, Observable<any>] => {
+  const createSource = (source: Sources, key: string) => {
+    const t$ = source$.pipe(
+      O.filter(match(key)),
+      O.map(first)
+    )
     return {...source, [key]: t$}
   }
 
-  const rest$ = source$.filter(noMatch(keys)).map(first)
+  const rest$ = source$.pipe(
+    O.filter(noMatch(keys)),
+    O.map(first)
+  )
   const source = keys.reduce(createSource, {})
   return [source, rest$]
 }

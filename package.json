@@ -1,18 +1,15 @@
 {
   "name": "muxer",
   "description": "stream multiplexer for es6 observables",
-  "main": "dist/muxer.js",
+  "main": "index.js",
   "scripts": {
     "prepublish": "npm run build",
     "test": "ava",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-    "build": "babel src --out-dir dist",
+    "build": "tsc -d",
     "doc": "jsdoc2md src/** --global-index-format grouped --template README.template.md > README.md"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tusharmath/muxer.git"
-  },
+  "repository": "https://github.com/tusharmath/muxer.git",
   "keywords": [
     "mux",
     "demux",
@@ -29,13 +26,10 @@
   "homepage": "https://github.com/tusharmath/muxer#readme",
   "devDependencies": {
     "ava": "^0.15.1",
-    "babel-cli": "^6.9.0",
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-register": "^6.9.0",
     "cz-conventional-changelog": "^1.1.6",
     "jsdoc-to-markdown": "^1.3.6",
-    "semantic-release": "^4.3.5"
+    "semantic-release": "^4.3.5",
+    "typescript": "^3.0.3"
   },
   "config": {
     "commitizen": {
@@ -43,18 +37,6 @@
     }
   },
   "dependencies": {
-    "rx": "^4.1.0"
-  },
-  "babel": {
-    "plugins": [
-      "transform-object-rest-spread"
-    ],
-    "presets": [
-      "es2015"
-    ]
-  },
-  "ava": {
-    "require": "babel-register",
-    "babel": "inherit"
+    "rxjs": "^6.3.2"
   }
 }
