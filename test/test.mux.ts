@@ -9,7 +9,7 @@ import test from 'ava'
 import {mux} from '../src/muxer'
 
 test(t => {
-  const sh = new TestScheduler(t.deepEqual)
+  const sh = new TestScheduler(t.deepEqual.bind(t))
   sh.run(({expectObservable, hot}) => {
     const upper = hot('--A--B---C-D--|')
     const lower = hot('----ab---c----d----|')
